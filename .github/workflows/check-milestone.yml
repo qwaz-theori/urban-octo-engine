@@ -20,11 +20,11 @@ jobs:
           DETAILS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
           MILESTONE=$(printf '%s' "$DETAILS" | jq -rc '.milestone')
           MERGED=$(printf '%s' "$DETAILS" | jq -rc '.merged')
-          echo "milestone=<<MULTILINE_DELIMITER
+          echo "milestone<<MULTILINE_DELIMITER
           $MILESTONE
           MULTILINE_DELIMITER" >> $GITHUB_OUTPUT
           echo "merged=$MERGED" >> $GITHUB_OUTPUT
-          echo "milestone=<<MULTILINE_DELIMITER
+          echo "milestone<<MULTILINE_DELIMITER
           $MILESTONE
           MULTILINE_DELIMITER"
           echo "merged=$MERGED"
