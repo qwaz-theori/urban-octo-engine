@@ -22,6 +22,8 @@ jobs:
           MERGED=$(printf '%s' "$DETAILS" | jq -rc '.merged')
           printf '%s' "milestone=$MILESTONE" >> $GITHUB_OUTPUT
           printf '%s' "merged=$MERGED" >> $GITHUB_OUTPUT
+          printf '%s' "milestone=$MILESTONE"
+          printf '%s' "merged=$MERGED"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Add Unclassified label
