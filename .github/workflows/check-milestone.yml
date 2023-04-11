@@ -1,0 +1,36 @@
+name: Add unclassified label to issues and PRs without a milestone
+
+on:
+  issues:
+    types: [closed]
+  pull_request:
+    types: [closed]
+
+jobs:
+  add-unclassified-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch issue or PR details
+        id: fetch-details
+        run: |
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          ISSUE_OR_PR_NUMBER=${{ github.event.number }}
+          API_URL="https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_OR_PR_NUMBER"
+
+          DETAILS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
+          MILESTONE=$(printf '%s' "$DETAILS" | jq -rc '.milestone')
+          MERGED=$(printf '%s' "$DETAILS" | jq -rc '.merged')
+          printf '%s' "::set-output name=milestone::$MILESTONE"
+          printf '%s' "::set-output name=merged::$MERGED"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Add Unclassified label
+        if: steps.fetch-details.outputs.milestone == "null" && (steps.fetch-details.outputs.merged == "true" || github.event_name == 'issues')
+        run: |
+          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          ISSUE_OR_PR_NUMBER=${{ github.event.number }}
+          API_URL="https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_OR_PR_NUMBER/labels"
+
+          curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" -d '{"labels": ["unclassified"]}' $API_URL
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
