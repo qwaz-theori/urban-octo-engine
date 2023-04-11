@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Add Unclassified label
         uses: actions/github-script@v6
-        if: github.event.issue.milestone == null && github.event.issue.resolution != 'not_planned'
+        if: github.event.issue.milestone == null && github.event.issue.state_reason != 'not_planned'
         with:
           script: |
             const issueNumber = context.payload.issue.number;
