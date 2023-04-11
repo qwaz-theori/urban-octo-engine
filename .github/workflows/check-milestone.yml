@@ -20,10 +20,14 @@ jobs:
           DETAILS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" $API_URL)
           MILESTONE=$(printf '%s' "$DETAILS" | jq -rc '.milestone')
           MERGED=$(printf '%s' "$DETAILS" | jq -rc '.merged')
-          printf '%s\n' "milestone=$MILESTONE" >> $GITHUB_OUTPUT
-          printf '%s\n' "merged=$MERGED" >> $GITHUB_OUTPUT
-          printf '%s\n' "milestone=$MILESTONE"
-          printf '%s\n' "merged=$MERGED"
+          echo "milestone=<<MULTILINE_DELIMITER
+          $MILESTONE
+          MULTILINE_DELIMITER" >> $GITHUB_OUTPUT
+          echo "merged=$MERGED" >> $GITHUB_OUTPUT
+          echo "milestone=<<MULTILINE_DELIMITER
+          $MILESTONE
+          MULTILINE_DELIMITER"
+          echo "merged=$MERGED"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Add Unclassified label
