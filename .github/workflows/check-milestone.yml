@@ -25,7 +25,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Add Unclassified label
-        if: steps.fetch-details.outputs.milestone == "null" && (steps.fetch-details.outputs.merged == "true" || github.event_name == 'issues')
+        if: steps.fetch-details.outputs.milestone == null && (steps.fetch-details.outputs.merged == true || github.event_name == 'issues')
         run: |
           GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           ISSUE_OR_PR_NUMBER=${{ github.event.number }}
