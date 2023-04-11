@@ -21,8 +21,7 @@ jobs:
           script: |
             const prNumber = context.payload.pull_request.number;
             const labelsToAdd = ["unclassified"];
-            const octokit = new Octokit();
-            await octokit.issues.addLabels({
+            await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
