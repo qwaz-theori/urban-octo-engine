@@ -1,0 +1,24 @@
+name: Add unclassified label to merged PRs without a milestone
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  add-unclassified-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Unclassified label
+        uses: actions/github-script@v6
+        if: github.event.issue.milestone == null && github.event.issue.resolution != 'not_planned'
+        with:
+          script: |
+            const issueNumber = context.payload.issue.number;
+            const labelsToAdd = ["unclassified"];
+            const octokit = new Octokit();
+            await octokit.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: labelsToAdd
+            });
