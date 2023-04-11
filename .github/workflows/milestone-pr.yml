@@ -4,12 +4,6 @@ on:
   pull_request:
     types: [closed]
 
-name: Add unclassified label to closed issues without a milestone
-
-on:
-  issues:
-    types: [closed]
-
 jobs:
   add-unclassified-label:
     runs-on: ubuntu-latest
