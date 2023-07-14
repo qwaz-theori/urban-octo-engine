@@ -8,7 +8,7 @@ jobs:
   add-milestone:
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: write
+      issues: write
     steps:
       - name: Add milestone
         uses: actions/github-script@v6
