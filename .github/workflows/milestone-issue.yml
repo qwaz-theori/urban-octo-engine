@@ -1,25 +1,34 @@
-name: Add unclassified label to closed issues without a milestone
+name: Add current milestone to closed issues
 
 on:
   issues:
     types: [closed]
 
 jobs:
-  add-unclassified-label:
+  add-milestone:
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
-      - name: Add Unclassified label
+      - name: Add milestone
         uses: actions/github-script@v6
         if: github.event.issue.milestone == null && github.event.issue.state_reason != 'not_planned'
+        env:
+          CURRENT_MILESTONE: ${{ vars.CURRENT_MILESTONE }}
         with:
           script: |
+            const { CURRENT_MILESTONE } = process.env;
             const issueNumber = context.payload.issue.number;
-            const labelsToAdd = ["unclassified"];
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNumber,
-              labels: labelsToAdd
-            });
+            console.log(`Issue Number: ${issueNumber}`);
+            console.log(`Milestone Number: ${CURRENT_MILESTONE}`);
+            try {
+              const result = await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                milestone: Number(CURRENT_MILESTONE)
+              });
+              console.log(`Update Result: ${JSON.stringify(result)}`);
+            } catch (error) {
+              console.error(`Failed to update issue with milestone: ${error}`)
+            }

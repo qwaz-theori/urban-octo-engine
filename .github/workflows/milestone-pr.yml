@@ -1,25 +1,34 @@
-name: Add unclassified label to merged PRs without a milestone
+name: Add current milestone to merged PRs
 
 on:
   pull_request:
     types: [closed]
 
 jobs:
-  add-unclassified-label:
+  add-milestone:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
     steps:
-      - name: Add Unclassified label
+      - name: Add milestone
         uses: actions/github-script@v6
         if: github.event.pull_request.milestone == null && github.event.pull_request.merged == true
+        env:
+          CURRENT_MILESTONE: ${{ vars.CURRENT_MILESTONE }}
         with:
           script: |
+            const { CURRENT_MILESTONE } = process.env;
             const prNumber = context.payload.pull_request.number;
-            const labelsToAdd = ["unclassified"];
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              labels: labelsToAdd
-            });
+            console.log(`PR Number: ${prNumber}`);
+            console.log(`Milestone Number: ${CURRENT_MILESTONE}`);
+            try {
+              const result = await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                milestone: Number(CURRENT_MILESTONE)
+              });
+              console.log(`Update Result: ${JSON.stringify(result)}`);
+            } catch (error) {
+              console.error(`Failed to update PR with milestone: ${error}`)
+            }
